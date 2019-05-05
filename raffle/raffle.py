@@ -45,6 +45,8 @@ import csv
 import random
 import itertools
 import argparse
+import json
+import os.path
 
 # We are using a brute force method here.
 # we could use random.choices() 
@@ -74,16 +76,17 @@ def load_csv(filename):
     """
     return dict(_load_csv(filename))
 
-def flatten(data):
+def flatten(data, winners):
     """flatten to a list of ['slip #', 'slip #', ...]
     Where the same slip number is repeated for each ticket.
     """
     def iterate_by_count(data):
         for slip, (count, row) in data.items():
-            yield(itertools.repeat(slip, count))
+            if slip not in winners['ids']:
+                yield(itertools.repeat(slip, count))
     return list(itertools.chain.from_iterable(iterate_by_count(data)))
 
-def picks(filename, num):
+def picks(filename, num, winners):
     """
     """
     # load the csv file into the main data dict.
@@ -94,7 +97,7 @@ def picks(filename, num):
     for i in range(num):
         # flatten to a list of slip numbenrs where each slip number is repeated
         # for each ticket in the slip.
-        tickets = flatten(data)
+        tickets = flatten(data, winners)
         # randomize the list (simulate mixing tickets)
         random.shuffle(tickets)
         # pick one at random
@@ -103,19 +106,29 @@ def picks(filename, num):
         yield data[slip][1]
         # delete the winning slip entry from the data.
         del data[slip]
+        # add them to the winners
+        winners['ids'].append(slip)
 
 DEFAULT_WINNER_COUNT=40
 
 parser = argparse.ArgumentParser()
-parser.add_argument('csv', 
+parser.add_argument('csv',
     help="CSV file containing the slips and counts.")
-parser.add_argument('-c', '--count', type=int, 
+parser.add_argument('-c', '--count', type=int,
     default=DEFAULT_WINNER_COUNT,
     help="Number of winning slips to pull. "
          f"(default: {DEFAULT_WINNER_COUNT})")
+parser.add_argument('-w', '--winners',
+    default='winners.json',
+    help="Winners tracking file")
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    for result in picks(args.csv, args.count):
+    if os.path.exists(args.winners):
+        winners = json.load(open(args.winners))
+    else:
+        winners = {'ids': []}
+    for result in picks(args.csv, args.count, winners):
         print(' '.join(result))
-        
+    json.dump(winners, open(args.winners, 'w'))
+
