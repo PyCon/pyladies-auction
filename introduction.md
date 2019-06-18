@@ -100,16 +100,16 @@ Please do not make any bids or hold up your paddles until the auctioneer has ope
 
 As bids go up, there are minimum bid increments. This isn’t the price is right. Bidding $1001 when the person next to you bid $1000 is clever. Don’t be clever. Joke values are funny, and welcome, but hard on the auctioneers. 
 
-Below <$100 the min bid increase is $1
-At >$100 the min bid increase is $5
-At >$1000 the min bid increase is $25
-At >$10K the min bid increase is, who cares!!!
+* Below <$100 the min bid increase is $1
+* At >$100 the min bid increase is $5
+* At >$1000 the min bid increase is $25
+* At >$10K the min bid increase is, who cares!!!
 
 When there are no more increases, the auctioneer will call the standard 3 times. 
-Going once
-Going twice
-Going three times….
-Sold!
+* Going once
+* Going twice
+* Going three times….
+* Sold!
 
 Yes, that is technically 3, Python is a 0 indexed language.
 
